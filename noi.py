@@ -5,10 +5,9 @@
 
 from supertonic import TTS
 from datetime import datetime
-import subprocess, os
+import subprocess, os, platform
 
 # ── 1. VĂN BẢN CẦN ĐỌC ─────────────────────────────────────
-# Thay đoạn văn bản bất kỳ vào đây, có thể dài hoặc ngắn tuỳ ý
 VAN_BAN = """
 Đây là giọng Nữ ép 3 tốc độ đọc là 1 chấm 6. Công cụ sup bơ tô níc Bạn thấy thế nào? Ổn chứ?
 """
@@ -26,7 +25,6 @@ TOC_DO = 1.6
 #  KHÔNG CẦN CHỈNH PHÍA DƯỚI
 # ============================================================
 
-# Tên file output: tự động gắn thời gian để không bị đè
 ten_file = f"Test_{GIONG}_{TOC_DO}x_{datetime.now().strftime('%H%M%S')}.wav"
 duong_dan = os.path.join(os.path.expanduser("~"), "Desktop", ten_file)
 
@@ -45,9 +43,14 @@ wav, duration = tts.synthesize(
 )
 tts.save_audio(wav, duong_dan)
 
-
 print(f"✅ Xong! Thời lượng: {float(duration):.1f} giây")
 print(f"📁 Đã lưu: {duong_dan}\n")
 
-# Tự động mở file để nghe ngay
-subprocess.run(["open", duong_dan])
+# Tự động mở file để nghe — cross-platform
+system = platform.system()
+if system == "Darwin":
+    subprocess.run(["open", duong_dan])
+elif system == "Windows":
+    os.startfile(duong_dan)
+else:
+    subprocess.run(["xdg-open", duong_dan])
